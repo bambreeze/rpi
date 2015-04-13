@@ -1,6 +1,8 @@
-a.out
-*.pyc
+cscope*
+tags
 .*swp
+*.pyc
+a.out
 
 # Object files
 *.o
