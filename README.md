@@ -25,7 +25,7 @@ sudo ./button
 
 4. Read CPU temperature
 -----------------------
-sudo python read_cpu .py
+sudo python read_cpu.py
 
 gcc -o read_cpu_temp read_cpu_temp.c
 
