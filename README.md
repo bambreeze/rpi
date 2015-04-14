@@ -39,3 +39,8 @@ make
 
 sudo ./dht11
 
+6. I2C Access - AT24C02 EEPROM
+----------------------
+make
+
+sudo ./at24c02
