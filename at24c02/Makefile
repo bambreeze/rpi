@@ -1,7 +1,9 @@
-# Uncomment the following line cross-compiling on Ubuntu
-RPI_CROSS_COMPILE_ON_UBUNTU = y
+# check whether we're cross-compiling
+ifneq ($(shell hostname), raspberrypi)
+    RPI_CROSS_COMPILE = y
+endif
 
-ifeq ($(RPI_CROSS_COMPILE_ON_UBUNTU),y)
+ifeq ($(RPI_CROSS_COMPILE), y)
     CC = arm-linux-gnueabihf-gcc
     CFLAGS = -std=c99 -I../bcm2835-1.35 -L../bcm2835-1.35 -lbcm2835
 else
