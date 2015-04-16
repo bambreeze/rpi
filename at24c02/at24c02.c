@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <bcm2835.h>
 
-#define I2C_ADDR_AT24C02 0x00
+#define I2C_ADDR_AT24C02 0xA0
 
 int main(int argc, char **argv)
 {
