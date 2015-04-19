@@ -47,7 +47,10 @@ sudo ./at24c02
 
 6.1 I2C Access using sysfs - AT24C02 EEPROM
 
-gcc at24c02_sysfs.c
+cd at24c02_ex/
 
-sudo ./a.out
+make
+
+sudo ./at24c02
+
 
