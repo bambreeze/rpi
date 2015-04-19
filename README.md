@@ -44,3 +44,10 @@ sudo ./dht11
 make
 
 sudo ./at24c02
+
+6.1 I2C Access using sysfs - AT24C02 EEPROM
+
+gcc at24c02_sysfs.c
+
+sudo ./a.out
+
