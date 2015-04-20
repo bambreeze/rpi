@@ -1,16 +1,61 @@
-#include <stdio.h>  
-#include <string.h>  
-#include <errno.h>  
-#include <fcntl.h>  
-#include <linux/i2c-dev.h>  
+#include <stdio.h>
+#include <stdint.h>
+#include <string.h>
+#include <stdlib.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <linux/i2c.h>
+#include <linux/i2c-dev.h>
 
 #define AT24C02_I2C_ADDR 0x50  
+
+int i2c_write_data (int fd, uint16_t addr, uint8_t offset, uint8_t val)
+{
+    struct i2c_rdwr_ioctl_data *data = NULL;
+
+    data = (struct i2c_rdwr_ioctl_data *) malloc(sizeof(struct i2c_rdwr_ioctl_data));
+    if (!data) {
+        return -1;
+    }
+
+    data->nmsgs = 1;
+    data->msgs  = (struct i2c_msg *) malloc(data->nmsgs * sizeof(struct i2c_msg));
+    if (!data->msgs) {
+        free(data);
+        return -1;
+    }
+
+    data->msgs[0].buf = (unsigned char *) malloc(2 * sizeof(unsigned char));
+    if (!data->msgs[0].buf) {
+        free(data->msgs);
+        free(data);
+        return -1;
+    }
+
+    data->msgs[0].addr = addr;
+    data->msgs[0].flags = 0;
+    data->msgs[0].len = 2;
+    data->msgs[0].buf[0] = offset;
+    data->msgs[0].buf[1] = val;
+
+    if (ioctl(fd, I2C_RDWR, (unsigned long)data) < 0) {
+        free(data->msgs[0].buf);
+        free(data->msgs);
+        free(data);
+        return -1;
+    }
+
+    free(data->msgs[0].buf);
+    free(data->msgs);
+    free(data);
+    return 0;
+}
 
 int main (void)
 {
     int i = 0;
     int fd = 0;  
-    unsigned char data[8];
+    unsigned char data[16];
     int counter = 0;
 
     fd = open("/dev/i2c-1", O_RDWR);  
@@ -25,18 +70,37 @@ int main (void)
     }
 
     // current address read
-    memset(data, 0, 8);
-    counter = read(fd, data, 8);
-    if (counter != 8) {
+    memset(data, 0, 16);
+    counter = read(fd, data, 16);
+    if (counter != 16) {
         printf("read fail!\n");
     } else {
-        for (i = 0; i < 8; i++) {
+        for (i = 0; i < 16; i++) {
             printf("Data[%d] is: 0x%x\n", i, data[i]);
         }
     }
 
-    //data = 0x69;
-    //write(fd, &data, 1);
+    // write
+    data[0] = 'H';
+    data[1] = 'e';
+    data[2] = 'l';
+    data[3] = 'l';
+    data[4] = 'o';
+    data[5] = ',';
+    data[6] = ' ';
+    data[7] = 'w';
+    data[8] = 'o';
+    data[9] = 'r';
+    data[10] = 'l';
+    data[11] = 'd';
+    data[12] = '!';
+
+    for (i = 0; i < 16; i++) {
+        if (i2c_write_data (fd, AT24C02_I2C_ADDR, i, data[i])) {
+            printf("write fail!\n");
+            return -1;
+        }
+    }
 
     return 0;  
 }
